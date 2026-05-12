@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+
 
 epochs = [1, 2, 3]
 loss = [0.2058, 0.0449, 0.0211]

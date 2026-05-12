@@ -6,6 +6,7 @@ from dataset import EssayDataset
 from model import ECE364Classifier
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 
@@ -49,6 +50,11 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 optimizer = torch.optim.AdamW(model.parameters(), lr=3e-5)
 criterion = nn.BCELoss()
 
+# Lists to store metrics for plotting
+epoch_list = []
+loss_history = []
+auc_history = []
+
 # Training Loop
 epochs = 3 
 for epoch in range(epochs):
@@ -78,9 +84,37 @@ for epoch in range(epochs):
             val_preds.extend(probs)
     
     auc = roc_auc_score(val_labels, val_preds)
-    print(f"Epoch {epoch+1} | Loss: {epoch_loss/len(train_loader):.4f} | Val ROC-AUC: {auc:.4f}")
+    avg_loss = epoch_loss / len(train_loader)
+    
+    # Store metrics
+    epoch_list.append(epoch + 1)
+    loss_history.append(avg_loss)
+    auc_history.append(auc)
+    
+    print(f"Epoch {epoch+1} | Loss: {avg_loss:.4f} | Val ROC-AUC: {auc:.4f}")
 
-# Final Submission
+# Plotting Logic
+print("Generating training metrics graph...")
+fig, ax1 = plt.subplots(figsize=(10, 6))
+
+color = 'tab:red'
+ax1.set_xlabel('Epoch')
+ax1.set_ylabel('Training Loss (BCE)', color=color)
+ax1.plot(epoch_list, loss_history, marker='o', color=color, label='Loss')
+ax1.tick_params(axis='y', labelcolor=color)
+
+ax2 = ax1.twinx()
+color = 'tab:blue'
+ax2.set_ylabel('Validation ROC-AUC', color=color)
+ax2.plot(epoch_list, auc_history, marker='s', color=color, label='ROC-AUC')
+ax2.tick_params(axis='y', labelcolor=color)
+
+plt.title('Training Loss vs. Validation ROC-AUC')
+plt.grid(True, linestyle='--')
+plt.savefig('training_metrics.png')
+print("Graph saved as training_metrics.png")
+
+# Final Submission Generation
 print("Generating prediction.csv...")
 model.eval()
 results = []
@@ -92,4 +126,4 @@ with torch.no_grad():
 
 submission = pd.DataFrame(results, columns=['Id', 'Prob'])
 submission.to_csv('prediction.csv', index=False)
-print("Done! prediction.csv has been generated. Check home repository")
+print("Done! prediction.csv has been generated.")
