@@ -101,26 +101,6 @@ Average epoch training time:
 
 ---
 
-# Repository Structure
-
-```text
-.
-├── data/
-├── models/
-├── notebooks/
-├── src/
-│   ├── dataset.py
-│   ├── model.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── tokenizer.py
-├── prediction.csv
-├── requirements.txt
-└── README.md
-```
-
----
-
 # Installation
 
 ```bash
@@ -143,9 +123,7 @@ python src/train.py
 
 # Evaluation
 
-```bash
-python src/evaluate.py
-```
+See `training_metrics.png`
 
 ---
 
